@@ -1,0 +1,23 @@
+{
+  "name": "puhelinluettelo-backend",
+  "version": "1.0.0",
+  "description": "- test",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tonttel/puhelinluettelo-backend.git"
+  },
+  "author": "Toni Hukka",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tonttel/puhelinluettelo-backend/issues"
+  },
+  "homepage": "https://github.com/tonttel/puhelinluettelo-backend#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
