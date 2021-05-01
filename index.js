@@ -1,8 +1,17 @@
 const { response } = require('express');
 const express = require('express');
+const morgan = require('morgan');
 const app = express();
 
 app.use(express.json());
+
+// Custom token for returning request body
+morgan.token('bodydata', function (req, res) {
+    // console.log(req.body)
+    return JSON.stringify(req.body);
+});
+
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :bodydata'));
 
 let persons = [
     {
@@ -89,6 +98,12 @@ app.get('/info', (req, res) => {
     <br>${dateNow} </p>`);
 });
 
+// Unknown endpoint middleware
+const unknownEndpoint = (request, response) => {
+    response.status(404).send({ error: 'unknown endpoint'});
+};
+
+app.use(unknownEndpoint);
 
 
 const PORT = 3001;
