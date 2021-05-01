@@ -27,14 +27,17 @@ let persons = [
     }
 ];
 
+// Root page
 app.get('/', (req, res) => {
     res.send('<h1>Phonebook backend wip </h1>');
 });
 
+// Get list of persons
 app.get('/api/persons', (req, res) => {
     res.json(persons);
 });
 
+// Get specific person info
 app.get('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id);
     const person = persons.find(person => person.id === id);
@@ -45,6 +48,7 @@ app.get('/api/persons/:id', (request, response) => {
     }
 });
 
+// Delete a person
 app.delete('/api/persons/:id', (request, response) => {
     console.log('params sisalto on', request.params);
     const id = Number(request.params.id);
@@ -53,15 +57,32 @@ app.delete('/api/persons/:id', (request, response) => {
     response.status(204).end();
 });
 
+// Create a new person
 app.post('/api/persons/', (request, response) => {
-    const person = request.body;
-    console.log(person);
+    const body = request.body;
+    // Check if required information is missing
+    if (!body.name || !body.phone) {
+        return response.status(400).json({
+            error: 'name or number is missing'
+        });
+    };
 
-    person.id = Math.floor(Math.random() * 10000);
+    if (persons.find(n => n.name === body.name)) {
+        return response.status(400).json({
+            error: 'name must be unique'
+        });
+    };
+
+    const person = {
+        name: body.name,
+        phone: body.phone,
+        id: Math.floor(Math.random() * 100000)
+    };
     persons = persons.concat(person);
     response.json(person);
 });
 
+// Get info page
 app.get('/info', (req, res) => {
     const dateNow = new Date();
     res.send(`<p> The phonebook has ${persons.length} persons in it 
