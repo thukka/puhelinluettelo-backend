@@ -1,13 +1,14 @@
 const { response } = require('express');
 const express = require('express');
 const morgan = require('morgan');
+const cors = require('cors');
 const app = express();
 
 app.use(express.json());
+app.use(cors());
 
 // Custom token for returning request body
 morgan.token('bodydata', function (req, res) {
-    // console.log(req.body)
     return JSON.stringify(req.body);
 });
 
@@ -70,7 +71,7 @@ app.delete('/api/persons/:id', (request, response) => {
 app.post('/api/persons/', (request, response) => {
     const body = request.body;
     // Check if required information is missing
-    if (!body.name || !body.phone) {
+    if (!body.name || !body.number) {
         return response.status(400).json({
             error: 'name or number is missing'
         });
@@ -84,7 +85,7 @@ app.post('/api/persons/', (request, response) => {
 
     const person = {
         name: body.name,
-        phone: body.phone,
+        number: body.number,
         id: Math.floor(Math.random() * 100000)
     };
     persons = persons.concat(person);
@@ -106,7 +107,7 @@ const unknownEndpoint = (request, response) => {
 app.use(unknownEndpoint);
 
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Server running on ${PORT}`);
 });
