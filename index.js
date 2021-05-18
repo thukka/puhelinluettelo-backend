@@ -1,8 +1,10 @@
+require('dotenv').config();
 const { response } = require('express');
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 const app = express();
+const Person = require('./models/person')
 
 app.use(express.json());
 app.use(cors());
@@ -45,7 +47,9 @@ app.get('/', (req, res) => {
 
 // Get list of persons
 app.get('/api/persons', (req, res) => {
-    res.json(persons);
+    Person.find({}).then(persons => {
+        res.json(persons);
+    });
 });
 
 // Get specific person info
@@ -74,23 +78,20 @@ app.post('/api/persons/', (request, response) => {
     // Check if required information is missing
     if (!body.name || !body.number) {
         return response.status(400).json({
-            error: 'name or number is missing'
+            error: 'name or number missing'
         });
     };
 
-    if (persons.find(n => n.name === body.name)) {
-        return response.status(400).json({
-            error: 'name must be unique'
-        });
-    };
-
-    const person = {
+    const person = new Person({
         name: body.name,
         number: body.number,
-        id: Math.floor(Math.random() * 100000)
-    };
-    persons = persons.concat(person);
-    response.json(person);
+    });
+
+    person.save().then(savedPerson => {
+        response.json(savedPerson);
+    });
+
+
 });
 
 // Get info page
@@ -102,7 +103,7 @@ app.get('/info', (req, res) => {
 
 // Unknown endpoint middleware
 const unknownEndpoint = (request, response) => {
-    response.status(404).send({ error: 'unknown endpoint'});
+    response.status(404).send({ error: 'unknown endpoint' });
 };
 
 app.use(unknownEndpoint);
