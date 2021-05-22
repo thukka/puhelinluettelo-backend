@@ -1,14 +1,13 @@
 require('dotenv').config();
-const { response } = require('express');
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 const app = express();
-const Person = require('./models/person')
+const Person = require('./models/person');
 
 // MIDDLEWARES
 // Custom token for returning request body
-morgan.token('bodydata', function (req, res) {
+morgan.token('bodydata', function (req) {
     return JSON.stringify(req.body);
 });
 
@@ -25,12 +24,10 @@ const errorHandler = (error, request, response, next) => {
     }
 
     if (error.name === 'ValidationError') {
-        return response.status(403).json({ error: error.message })
+        return response.status(403).json({ error: error.message });
     }
-
-
     next(error);
-}
+};
 
 // USE
 app.use(express.json());
@@ -58,9 +55,9 @@ app.get('/api/persons/:id', (request, response, next) => {
                 response.json(note);
             } else {
                 response.status(404).end();
-            };
+            }
         }).catch(error => {
-            next(error)
+            next(error);
         });
 });
 
@@ -81,7 +78,7 @@ app.post('/api/persons/', (request, response, next) => {
         return response.status(400).json({
             error: 'name or number missing'
         });
-    };
+    }
 
     const person = new Person({
         name: body.name,
@@ -95,11 +92,11 @@ app.post('/api/persons/', (request, response, next) => {
 
 // Update existing info
 app.put('/api/persons/:id', (request, response, next) => {
-    const body = request.body
+    const body = request.body;
     const person = {
         name: body.name,
         number: body.number
-    }
+    };
 
     Person.findByIdAndUpdate(request.params.id, person, { new: true })
         .then(modifiedPerson => {
@@ -110,7 +107,7 @@ app.put('/api/persons/:id', (request, response, next) => {
 // Get info page
 app.get('/info', (req, res) => {
     const dateNow = new Date();
-    res.send(`<p> The phonebook has ${persons.length} persons in it 
+    res.send(`<p> Backend for phonebook 
     <br>${dateNow} </p>`);
 });
 
